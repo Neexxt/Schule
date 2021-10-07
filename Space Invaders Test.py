@@ -7,7 +7,6 @@ screen_width = 1200
 screen_height = 550
 player_spaceship = pygame.image.load("spaceship.png")
 game_background = pygame.image.load("space background.png")
-ani = 4
 
 
 class space_ship(pygame.sprite.Sprite):
@@ -15,32 +14,22 @@ class space_ship(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = player_spaceship
         self.rect = self.image.get_rect()
-        self.rect.center = (screen_width / 2, screen_height / 2)
-        self.move_x = 0
-        self.move_y = 0
-        self.frame = 0
-        self.images = []
-        self.img = self.images[0]
-
-    def control(self, x, y):
-        self.move_x += x
-        self.move_y += y
+        self.rect.centerx = screen_width / 2
+        self.rect.bottom = screen_height / 1.1
+        self.speed_ship = 0
 
     def update(self):
-        self.rect.x = self.rect.x + self.move_x
-        self.rect.y = self.rect.y + self.move_y
-        # left
-        if self.move_x > 0:
-            self.frame += 1
-            if self.frame > 3 * ani:
-                self.frame = 0
-            self.img = self.images[self.frame // ani]
-        # right
-        if self.move_x < 0:
-            self.frame += 1
-            if self.frame > 3 * ani:
-                self.frame = 0
-            self.img = self.images[self.frame // ani]
+        self.speed_ship = 0
+        key_state = pygame.key.get_pressed()
+        if key_state[pygame.K_LEFT]:
+            self.speed_ship = -9
+        if key_state[pygame.K_RIGHT]:
+            self.speed_ship = 9
+        self.rect.x += self.speed_ship
+        if self.rect.right > screen_width:
+            self.rect.right = screen_width
+        if self.rect.left < 0:
+            self.rect.left = 0
 
 
 class laser:
@@ -64,38 +53,22 @@ def main():
     all_sprites = pygame.sprite.Group()
     spaceship = space_ship()
     all_sprites.add(spaceship)
-    all_sprites.update()
-    screen.blit(game_background, (0, 0))
-    screen.blit(player_spaceship, spaceship.rect.center)
-    pygame.display.flip()
 
-    steps = 10
-    spaceship.rect.x = 0
-    spaceship.rect.y = 0
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    print("links")
-                    spaceship.control(-steps, 0)
-                elif event.key == pygame.K_RIGHT:
-                    print("rechts")
-                    spaceship.control(steps, 0)
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT:
-                    spaceship.control(steps, 0)
-                elif event.key == pygame.K_RIGHT:
-                    spaceship.control(-steps, 0)
-
+            if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
 
-        spaceship.update()
+        all_sprites.update()
+        screen.blit(game_background, (0, 0))
+        all_sprites.draw(screen)
+        # screen.blit(player_spaceship, spaceship.rect.center)
         pygame.display.flip()
         clock.tick(30)
 
