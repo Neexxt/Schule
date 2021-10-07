@@ -68,7 +68,6 @@ def main():
         all_sprites.update()
         screen.blit(game_background, (0, 0))
         all_sprites.draw(screen)
-        # screen.blit(player_spaceship, spaceship.rect.center)
         pygame.display.flip()
         clock.tick(30)
 
