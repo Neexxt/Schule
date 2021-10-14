@@ -1,7 +1,6 @@
 import sys
-import os
 import pygame
-import random
+
 
 screen_width = 1200
 screen_height = 550
