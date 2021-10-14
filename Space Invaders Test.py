@@ -8,7 +8,7 @@ player_spaceship = pygame.image.load("spaceship.png")
 game_background = pygame.image.load("space background.png")
 laser_png = pygame.image.load("bullet.png")
 game_background = pygame.transform.scale(game_background, (1200, 550))
-laser_png = pygame.transform.scale(laser_png, (64, 64))
+laser_png = pygame.transform.scale(laser_png, (54, 54))
 
 
 class space_ship(pygame.sprite.Sprite):
@@ -38,16 +38,16 @@ class space_ship(pygame.sprite.Sprite):
 
         time_now = pygame.time.get_ticks()
 
-        if key_state[pygame.K_SPACE] and time_now - self.shot > cd:
-            bullet = laser(self.rect.centerx, self.rect.top)
-            bullet_group.add(bullet)
+        if key_state[pygame.K_SPACE] and time_now - self.shot > cd:  # bullet trigger // new sprite group for the laser
+            laser = Laser(self.rect.centerx, self.rect.top)
+            laser_group.add(laser)
             self.shot = time_now
 
 
-bullet_group = pygame.sprite.Group()
+laser_group = pygame.sprite.Group()
 
 
-class laser(pygame.sprite.Sprite):
+class Laser(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.image = laser_png
@@ -92,8 +92,8 @@ def main():
         all_sprites.update()
         screen.blit(game_background, (0, 0))
         all_sprites.draw(screen)
-        bullet_group.update()
-        bullet_group.draw(screen)
+        laser_group.update()
+        laser_group.draw(screen)
         pygame.display.flip()
         fps.tick(60)
 
