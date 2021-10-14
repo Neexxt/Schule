@@ -7,7 +7,7 @@ screen_width = 1200
 screen_height = 550
 player_spaceship = pygame.image.load("spaceship.png")
 game_background = pygame.image.load("space background.png")
-laser_png = pygame.image.load("Fireball1.png")
+laser_png = pygame.image.load("bullet.png")
 game_background = pygame.transform.scale(game_background, (1200, 550))
 laser_png = pygame.transform.scale(laser_png, (64, 64))
 
@@ -21,9 +21,11 @@ class space_ship(pygame.sprite.Sprite):
         self.rect.bottom = screen_height / 1.1
         self.pos = self.rect.centerx, self.rect.bottom
         self.speed_ship = 0
+        self.shot = pygame.time.get_ticks()
 
     def update(self):
         self.speed_ship = 0
+        cd = 250  # bullet speed // delay between shots
         key_state = pygame.key.get_pressed()
         if key_state[pygame.K_LEFT]:
             self.speed_ship = -9
@@ -35,14 +37,28 @@ class space_ship(pygame.sprite.Sprite):
         if self.rect.left < 0:
             self.rect.left = 0
 
+        time_now = pygame.time.get_ticks()
+
+        if key_state[pygame.K_SPACE] and time_now - self.shot > cd:
+            bullet = laser(self.rect.centerx, self.rect.top)
+            bullet_group.add(bullet)
+            self.shot = time_now
+
+
+bullet_group = pygame.sprite.Group()
+
 
 class laser(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.image = laser_png
         self.rect = self.image.get_rect()
-        # self.rect.center = (screen_width / 2, screen_height / 2)
-        self.image = pygame.transform.rotate(pygame.transform.rotate(laser_png, -3), 455)
+        self.rect.center = [x, y]
+
+    def update(self):
+        self.rect.y -= 5
+        if self.rect.bottom < 0:
+            self.kill()
 
 
 class game_settings:
@@ -62,8 +78,7 @@ def main():
 
     all_sprites = pygame.sprite.Group()
     spaceship = space_ship()
-    fireball = laser()
-    all_sprites.add(fireball)
+
     all_sprites.add(spaceship)
     running = True
     while running:
@@ -78,6 +93,8 @@ def main():
         all_sprites.update()
         screen.blit(game_background, (0, 0))
         all_sprites.draw(screen)
+        bullet_group.update()
+        bullet_group.draw(screen)
         pygame.display.flip()
         fps.tick(60)
 
