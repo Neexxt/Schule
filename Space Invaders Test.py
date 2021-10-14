@@ -9,6 +9,8 @@ game_background = pygame.image.load("space background.png")
 laser_png = pygame.image.load("bullet.png")
 game_background = pygame.transform.scale(game_background, (1200, 550))
 laser_png = pygame.transform.scale(laser_png, (54, 54))
+enemy_alien = pygame.image.load("alien_ship.png")
+enemy_alien = pygame.transform.scale(enemy_alien, (70, 65))
 
 
 class space_ship(pygame.sprite.Sprite):
@@ -25,6 +27,7 @@ class space_ship(pygame.sprite.Sprite):
     def update(self):
         self.speed_ship = 0
         cd = 250  # bullet speed // delay between shots
+
         key_state = pygame.key.get_pressed()
         if key_state[pygame.K_LEFT]:
             self.speed_ship = -9
@@ -44,7 +47,7 @@ class space_ship(pygame.sprite.Sprite):
             self.shot = time_now
 
 
-laser_group = pygame.sprite.Group()
+
 
 
 class Laser(pygame.sprite.Sprite):
@@ -58,15 +61,35 @@ class Laser(pygame.sprite.Sprite):
         self.rect.y -= 5
         if self.rect.bottom < 0:
             self.kill()
+        if pygame.sprite.spritecollide(self, alien_group, True):
+            self.kill()
+
+
+laser_group = pygame.sprite.Group()
+alien_group = pygame.sprite.Group()
+
 
 
 class game_settings:
     pass
 
 
-class aliens:
+class Aliens(pygame.sprite.Sprite):
     def __init__(self):
-        pass
+        pygame.sprite.Sprite.__init__(self)
+        self.image = enemy_alien
+        self.rect = self.image.get_rect()
+        self.rect.centerx = screen_width / 2
+        self.rect.top = screen_height / 40
+        self.move_counter = 0
+        self.move_direction = 1
+
+    def update(self):
+        self.rect.x += self.move_direction
+        self.move_counter += 1
+        if abs(self.move_counter) > 400:
+            self.move_direction *= -1
+            self.move_counter *= self.move_direction
 
 
 def main():
@@ -77,8 +100,10 @@ def main():
 
     all_sprites = pygame.sprite.Group()
     spaceship = space_ship()
-
     all_sprites.add(spaceship)
+    aliens = Aliens()
+    alien_group.add(aliens)
+
     running = True
     while running:
         for event in pygame.event.get():
@@ -94,6 +119,8 @@ def main():
         all_sprites.draw(screen)
         laser_group.update()
         laser_group.draw(screen)
+        alien_group.update()
+        alien_group.draw(screen)
         pygame.display.flip()
         fps.tick(60)
 
