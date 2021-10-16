@@ -57,7 +57,7 @@ class Laser(pygame.sprite.Sprite):  # Mahmoud class Laser // Laser init
         self.rect.y -= 5
         if self.rect.bottom < 0:
             self.kill()
-        if pygame.sprite.spritecollide(self, alien_group, True):
+        if pygame.sprite.spritecollide(self, alien_group, True):  # Jayson
             self.kill()
 
 
@@ -66,19 +66,19 @@ alien_group = pygame.sprite.Group()
 
 
 class Aliens(pygame.sprite.Sprite):  # Jayson class Aliens() // enemy aliens, movement
-    def __init__(self):
+    def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.image = enemy_alien
         self.rect = self.image.get_rect()
-        self.rect.centerx = screen_width / 2
-        self.rect.top = screen_height / 40
+        self.rect.centerx = x
+        self.rect.top = y
         self.move_counter = 0
         self.move_direction = 1
 
     def update(self):
         self.rect.x += self.move_direction
         self.move_counter += 1
-        if abs(self.move_counter) > 400:
+        if abs(self.move_counter) > 500:
             self.move_direction *= -1
             self.move_counter *= self.move_direction
 
@@ -92,8 +92,9 @@ def main():  # Jayson def main // Game main loop
     all_sprites = pygame.sprite.Group()
     spaceship = space_ship()
     all_sprites.add(spaceship)
-    aliens = Aliens()
-    alien_group.add(aliens)
+
+    for i in range(0, 10):
+        alien_group.add(Aliens(i * 70, 50))
 
     running = True
     while running:
