@@ -57,7 +57,7 @@ class Laser(pygame.sprite.Sprite):  # Mahmoud class Laser // Laser init
         self.rect.y -= 5
         if self.rect.bottom < 0:
             self.kill()
-        if pygame.sprite.spritecollide(self, alien_group, True):  # Jayson
+        if pygame.sprite.spritecollide(self, alien_group, True):
             self.kill()
 
 
